@@ -1,4 +1,3 @@
-# Build from root of repo with `docker build -t onvif-build -f ./build/Dockerfile.onvif-camera .`
 FROM ubuntu:22.04 as build
 WORKDIR /
 RUN apt update && apt upgrade -y

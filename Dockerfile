@@ -1,6 +1,7 @@
 FROM ubuntu:22.04 as build
 WORKDIR /
 RUN apt update && apt upgrade -y
+
 RUN apt install \
     flex bison byacc make cmake m4 autoconf unzip \
     openssl libssl-dev zlib1g-dev libcrypto++8 \
@@ -18,14 +19,15 @@ RUN git clone https://github.com/KoynovStas/wsdd.git && \
 
 
 FROM ubuntu:22.04
-RUN apt update && \
-    apt install python3 sudo iproute2 -y
+RUN apt update 
 
-COPY --from=build /onvif_srvd/build/onvif_srvd /onvif-camera-server/onvif_srvd
-COPY --from=build /wsdd/build/wsdd /onvif-camera-server/wsdd
-COPY main.py /onvif-camera-server/main.py
+COPY --from=build \
+    /onvif_srvd/build/onvif_srvd \
+    /onvif-camera-server/onvif_srvd
+COPY --from=build \
+    /wsdd/build/wsdd \
+    /onvif-camera-server/wsdd
 
-RUN chmod +x /onvif-camera-server/main.py
-EXPOSE 1000
-#CMD ["/onvif-camera-server/main.py", "eth0", "/onvif-camera-server"]
-#ENTRYPOINT ["python3"]
+COPY ./docker/entrypoint.sh /
+
+ENTRYPOINT ["/entrypoint.sh"]

@@ -11,6 +11,18 @@ HWID="${HWID:-HW_ID}"
 FW_VER="${FW_VER:-1.0.0}"
 TYPE="${TYPE:-H264}"
 
+
+cleanup () {
+    echo "Container stopped, performing cleanup..."
+    kill `cat /wsdd.pid`
+    kill `cat /onvif_srvd.pid`
+    echo "Done"
+    exit
+}
+
+#Trap SIGTERM
+trap 'cleanup' SIGTERM
+
 if [[ -z ${URL} ]]
 then
   echo "RTSP URL not provided.  Be sure to set the URL environment variable"
@@ -23,6 +35,7 @@ then
   exit 1
 fi
 
+echo "Starting wsdd daemon"
 /onvif-camera-server/wsdd \
   --if_name ${INTERFACE} \
   --type tdn:NetworkVideoTransmitter \
@@ -32,6 +45,7 @@ fi
            onvif://www.onvif.org/hardware/S_HARDWARE \
            onvif://www.onvif.org/location/S_LOCATION"
 
+echo "Starting onvif_srvd daemon"
 /onvif-camera-server/onvif_srvd \
   --ifs ${INTERFACE} \
   --scope onvif://www.onvif.org/name/${MANUFACTURER}-${MODEL} \
@@ -39,7 +53,6 @@ fi
   --scope onvif://www.onvif.org/hardware/S_LOCATION \
   --scope onvif://www.onvif.org/Profile/S  \
   --scope onvif://www.onvif.org/Profile/Streaming \
-  --no_fork \
   --name RTSP \
   --width ${WIDTH} \
   --height ${HEIGHT} \
@@ -51,3 +64,8 @@ fi
   --hardware_id ${HWID} \
   --firmware_ver ${FW_VER} \
   --type ${TYPE}
+
+while true; do sleep 1000; done &
+wait
+
+echo "onvif-camera-server exited"

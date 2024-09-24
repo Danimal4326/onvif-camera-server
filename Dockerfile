@@ -1,4 +1,4 @@
-FROM ubuntu:22.04 as build
+FROM ubuntu:22.04 as builder
 WORKDIR /
 RUN apt update && apt upgrade -y
 
@@ -19,15 +19,16 @@ RUN git clone https://github.com/KoynovStas/wsdd.git && \
 
 
 FROM ubuntu:22.04
-RUN apt update 
+RUN apt update && apt install bash dumb-init -y
 
-COPY --from=build \
+COPY --from=builder \
     /onvif_srvd/build/onvif_srvd \
     /onvif-camera-server/onvif_srvd
-COPY --from=build \
+
+COPY --from=builder \
     /wsdd/build/wsdd \
     /onvif-camera-server/wsdd
 
 COPY ./docker/entrypoint.sh /
 
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["dumb-init", "/entrypoint.sh"]

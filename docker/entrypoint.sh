@@ -1,7 +1,6 @@
 #!/bin/bash
 
-INTERFACE=$(ls /sys/class/net | grep -v lo)
-
+INTERFACE=${INTERFACE:-$(ls /sys/class/net | grep -v lo)}
 WIDTH="${WIDTH:-1280}"
 HEIGHT="${HEIGHT:-720}"
 MANUFACTURER="${MANUFACTURER:-Onvif}"

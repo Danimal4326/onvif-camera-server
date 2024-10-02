@@ -1,31 +1,60 @@
+> [!NOTE]  
+> This project started as a fork from [kate-goldenring/onvif-camera-mocking](https://github.com/kate-goldenring/onvif-camera-mocking)
+
 ## Overview
 
 This project provides a docker container to simulate a ONVIF compliant camera. It will serve the RTSP URL provided to the container and make the 'camera' discoverable to ONVIF NVRs
 
-> [!NOTE]  
-> This project started as a fork from [kate-goldenring/onvif-camera-mocking](https://github.com/kate-goldenring/onvif-camera-mocking)
 
 If you want to use the container without building it, you can download it using the following command:
 
 ```bash
 docker pull docker.io/danimal4326/onvif-camera-server:latest
 ```
-
 Docker Hub: [https://hub.docker.com/r/danimal4326/onvif-camera-server](https://hub.docker.com/r/danimal4326/onvif-camera-server)
 
 
 ## Getting started
 
-#### Build the Docker Container
+### Build Container
 
-    ```sh
-    git clone https://github.com/Danimal4326/onvif-camera-server.git
-    cd onvif-camera-server
-    docker build .
-    ```
-#### Start the container
+```sh
+git clone https://github.com/Danimal4326/onvif-camera-server.git
+cd onvif-camera-server
+docker build .
+```
+
+### Start Container
+
+Basic run command:
+
+```bash
+docker run -d --net host -e URL="rtsp://<RTSP URL>" -e SNAPSHOT_URL="<URL to a jpeg snapshot>" --name onvif-camera-server docker.io/danimal4326/onvif-camera-server
+```
+
+If you prefer to use docker-compose, here's a sample compose.yaml file:
+```yaml
+services:
+
+  onvif-camera-server:
+
+    container_name: onvif-camera-server
+
+    image: 'localhost/onvif-camera-server:latest'
+
+    restart: always
+
+    network_mode: host
+
+    environment:
+      - URL='rtsp://my.rtsp.url'
+      - SNAPSHOT_URL='http://my.snapshot.url'
+      - MANUFACTURER=manufacturer
+      - MODEL=my_model
+```
 
 The container accepts the following environment variables:
+
 | Name          | Description                                       | Default<br>Value                                      | Required  |
 |-------------- |-------------------------------------------------  |-----------------------------------------------------  |---------- |
 | URL           | Url of camera feed. (Be sure to include the port) | N/A                                                   | Y         |
@@ -40,40 +69,7 @@ The container accepts the following environment variables:
 | FWVER         | Firmware version                                  | 1.0.0                                                 | N         |
 | TYPE          | Encoding of the video feed                        | H264                                                  | N         |
 
-  ```bash
-URL - URL to serve - Required
-SNAPSHOT_URL - Static image to server
-INTERFACE - Interface to use - Optional - Default
-WIDTH=1280
-HEIGHT=720
-MANUFACTURER=Onvif
-MODEL=Camera
-SERIAL=00:01:02:03:04:05
-HWID=HW_ID
-FWVER=1.0.0
-TYPE=H264
-  ```
 
-  ```yaml
-services:
-
-  onvif-camera-server:
-
-    container_name: onvif-camera-server
-
-    image: 'localhost/onvif-camera-server:latest'
-
-    restart: always
-
-    network_mode: host
-
-    environment:
-      - URL='rtsp://camera.url:8554/feed1'
-      - SNAPSHOT_URL='http://camera.url/image.jpg'
-      - MANUFACTURER=MyManufacturer
-      - MODEL=MyModel
-
-    ```
 
 ## Resources
 

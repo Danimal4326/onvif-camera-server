@@ -1,3 +1,7 @@
+# This project has been abandoned in favor of https://github.com/Danimal4326/onvif-server
+
+## It will be archived
+
 > [!NOTE]  
 > This project started as a fork from [kate-goldenring/onvif-camera-mocking](https://github.com/kate-goldenring/onvif-camera-mocking)
 
